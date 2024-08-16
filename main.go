@@ -9,17 +9,16 @@ import (
 )
 
 func main() {
-	lat, long, city := getLocation()
+	lat, long := getLocation()
 	temp, wind, clouds := getWeather(lat, long)
 
-	fmt.Printf("It is currently %gF in %s with gusts to %gmph and %g%% cloud cover.", temp, city, wind, clouds)
+	fmt.Printf("It is currently %gF with gusts to %gmph and %g%% cloud cover.", temp, wind, clouds)
 }
 
-func getLocation() (lat string, long string, city string) {
+func getLocation() (lat string, long string) {
 	type Location struct {
 		Latitude  float32 `json:"latitude"`
 		Longitude float32 `json:"longitude"`
-		City      string  `json:"city"`
 	}
 
 	resp, err := http.Get("https://ipapi.co/json")
@@ -39,7 +38,6 @@ func getLocation() (lat string, long string, city string) {
 
 	lat = strconv.FormatFloat(float64(location.Latitude), 'g', -1, 32)
 	long = strconv.FormatFloat(float64(location.Longitude), 'g', -1, 32)
-	city = location.City
 	return
 }
 
