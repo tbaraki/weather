@@ -10,9 +10,9 @@ import (
 
 func main() {
 	lat, long := getLocation()
-	temp, wind, clouds, rain := getWeather(lat, long)
+	temp, wind, clouds, rain, tempUnit := getWeather(lat, long)
 
-	fmt.Printf("It is currently %gF with gusts to %gmph. There is %g%% cloud cover and you can expect %gin of rain.", temp, wind, clouds, rain)
+	fmt.Printf("It is currently %g%s with gusts to %gmph. There is %g%% cloud cover and you can expect %gin of rain.", temp, tempUnit, wind, clouds, rain)
 }
 
 func getLocation() (lat string, long string) {
@@ -41,10 +41,12 @@ func getLocation() (lat string, long string) {
 	return
 }
 
-func getWeather(lat string, long string) (temp float32, wind float32, clouds float32, rain float32) {
+func getWeather(lat string, long string) (temp float32, wind float32, clouds float32, rain float32, tempUnit string) {
 	type Weather struct {
+		Unit struct {
+			FeelsLike string `json:"apparent_temperature"`
+		} `json:"current_units"`
 		Current struct {
-			Temperature   float32 `json:"temperature_2m"`
 			FeelsLike     float32 `json:"apparent_temperature"`
 			Precipitation float32 `json:"precipitation"`
 			Clouds        float32 `json:"cloud_cover"`
@@ -77,5 +79,7 @@ func getWeather(lat string, long string) (temp float32, wind float32, clouds flo
 	wind = weather.Current.Wind
 	clouds = weather.Current.Clouds
 	rain = weather.Current.Precipitation
+
+	tempUnit = weather.Unit.FeelsLike
 	return
 }
