@@ -79,7 +79,6 @@ func getWeather(lat string, long string) (temp float32, wind float32, clouds flo
 	wind = weather.Current.Wind
 	clouds = weather.Current.Clouds
 	rain = weather.Current.Precipitation
-
 	tempUnit = weather.Unit.FeelsLike
 	return
 }
