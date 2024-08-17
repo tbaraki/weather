@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -54,7 +55,7 @@ func getWeather(lat string, long string) (temp float32, wind float32, clouds flo
 		} `json:"clouds"`
 	}
 
-	apikey := "fd02e3f101de34b392e1deebe9e19d1e"
+	apikey := os.Getenv("OWAPI")
 	url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=imperial", lat, long, apikey)
 
 	resp, err := http.Get(url)
