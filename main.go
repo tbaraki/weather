@@ -5,24 +5,23 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 )
 
 func main() {
 	lat, long := getLocation()
-	temp, wind, clouds := getWeather(lat, long)
+	temp, wind, clouds, rain, tempUnit := getWeather(lat, long)
 
-	fmt.Printf("It is currently %gF with gusts to %gmph and %g%% cloud cover.", temp, wind, clouds)
+	fmt.Printf("It is currently %g%s with gusts to %gmph. There is %g%% cloud cover and you can expect %gin of rain.", temp, tempUnit, wind, clouds, rain)
 }
 
 func getLocation() (lat string, long string) {
 	type Location struct {
-		Latitude  float32 `json:"latitude"`
-		Longitude float32 `json:"longitude"`
+		Latitude  float32 `json:"lat"`
+		Longitude float32 `json:"lon"`
 	}
 
-	resp, err := http.Get("https://ipapi.co/json")
+	resp, err := http.Get("http://ip-api.com/json?fields=lat,lon")
 	if err != nil {
 		fmt.Printf("error getting location: %s", err)
 	}
@@ -30,7 +29,6 @@ func getLocation() (lat string, long string) {
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
-
 	var location Location
 	err = json.Unmarshal(body, &location)
 	if err != nil {
@@ -42,21 +40,24 @@ func getLocation() (lat string, long string) {
 	return
 }
 
-func getWeather(lat string, long string) (temp float32, wind float32, clouds float32) {
-	type Conditions struct {
-		Main struct {
-			Temperature float32 `json:"feels_like"`
-		} `json:"main"`
-		Wind struct {
-			Gust float32 `json:"gust"`
-		} `json:"wind"`
-		Clouds struct {
-			CloudCover float32 `json:"all"`
-		} `json:"clouds"`
+func getWeather(lat string, long string) (temp float32, wind float32, clouds float32, rain float32, tempUnit string) {
+	type Weather struct {
+		Unit struct {
+			FeelsLike string `json:"apparent_temperature"`
+		} `json:"current_units"`
+		Current struct {
+			FeelsLike     float32 `json:"apparent_temperature"`
+			Precipitation float32 `json:"precipitation"`
+			Clouds        float32 `json:"cloud_cover"`
+			Wind          float32 `json:"wind_gusts_10m"`
+		} `json:"current"`
 	}
 
-	apikey := os.Getenv("OWAPI")
-	url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=imperial", lat, long, apikey)
+	baseurl := "https://api.open-meteo.com/v1/forecast?"
+	params := fmt.Sprintf("latitude=%s&longitude=%s", lat, long)
+	data := "current=temperature_2m,apparent_temperature,precipitation,cloud_cover,wind_gusts_10m"
+	units := "temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
+	url := fmt.Sprintf("%s%s&%s&%s", baseurl, params, data, units)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -67,14 +68,16 @@ func getWeather(lat string, long string) (temp float32, wind float32, clouds flo
 
 	body, _ := io.ReadAll(resp.Body)
 
-	var weather Conditions
+	var weather Weather
 	err = json.Unmarshal(body, &weather)
 	if err != nil {
 		panic(err)
 	}
-	temp = weather.Main.Temperature
-	wind = weather.Wind.Gust
-	clouds = weather.Clouds.CloudCover
 
+	temp = weather.Current.FeelsLike
+	wind = weather.Current.Wind
+	clouds = weather.Current.Clouds
+	rain = weather.Current.Precipitation
+	tempUnit = weather.Unit.FeelsLike
 	return
 }
