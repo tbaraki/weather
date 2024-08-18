@@ -2,7 +2,7 @@
 A **very** simple CLI weather app in Go.
 
 ## Usage
-Simply run `weather` from your terminal. Weather will guesstimate your location via IP geolocation and fetch the weather from [Open Weather Map](https://openweathermap.org).
+Simply run `weather` from your terminal. Weather will guesstimate your location via IP geolocation and fetch the weather from [Open-Meteo](https://open-meteo.com).
 
 ## Future Enhancements
 - ~~switch weather source to Open-Meteo.~~
