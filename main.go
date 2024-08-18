@@ -17,11 +17,11 @@ func main() {
 
 func getLocation() (lat string, long string) {
 	type Location struct {
-		Latitude  float32 `json:"latitude"`
-		Longitude float32 `json:"longitude"`
+		Latitude  float32 `json:"lat"`
+		Longitude float32 `json:"lon"`
 	}
 
-	resp, err := http.Get("https://ipapi.co/json")
+	resp, err := http.Get("http://ip-api.com/json?fields=lat,lon")
 	if err != nil {
 		fmt.Printf("error getting location: %s", err)
 	}
@@ -29,7 +29,6 @@ func getLocation() (lat string, long string) {
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
-
 	var location Location
 	err = json.Unmarshal(body, &location)
 	if err != nil {
