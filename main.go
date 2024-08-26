@@ -29,7 +29,11 @@ func main() {
 	weather := getWeather(location)
 
 	fmt.Printf("It is currently %g%s with gusts to %gmph. There is %g%% cloud cover and you can expect %gin of rain.",
-		weather.Current.FeelsLike, weather.Unit.FeelsLike, weather.Current.Wind, weather.Current.Clouds, weather.Current.Precipitation)
+		weather.Current.FeelsLike,
+		weather.Unit.FeelsLike,
+		weather.Current.Wind,
+		weather.Current.Clouds,
+		weather.Current.Precipitation)
 }
 
 func getLocation() (location Location) {
