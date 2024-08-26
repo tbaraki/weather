@@ -54,18 +54,6 @@ func getLocation() (location Location) {
 }
 
 func getWeather(location Location) (weather Weather) {
-	type Weather struct {
-		Unit struct {
-			FeelsLike string `json:"apparent_temperature"`
-		} `json:"current_units"`
-		Current struct {
-			FeelsLike     float32 `json:"apparent_temperature"`
-			Precipitation float32 `json:"precipitation"`
-			Clouds        float32 `json:"cloud_cover"`
-			Wind          float32 `json:"wind_gusts_10m"`
-		} `json:"current"`
-	}
-
 	baseurl := "https://api.open-meteo.com/v1/forecast?"
 	params := fmt.Sprintf("latitude=%g&longitude=%g", location.Latitude, location.Longitude)
 	data := "current=temperature_2m,apparent_temperature,precipitation,cloud_cover,wind_gusts_10m"
