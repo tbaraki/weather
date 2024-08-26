@@ -45,7 +45,6 @@ func getLocation() (location Location) {
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
-	// var location Location
 	err = json.Unmarshal(body, &location)
 	if err != nil {
 		panic(err)
